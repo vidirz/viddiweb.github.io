@@ -1,20 +1,20 @@
-;(function () {
-	
-	'use strict';
+ AOS.init({
+ 	duration: 800,
+ 	easing: 'slide'
+ });
 
+(function($) {
 
+	"use strict";
 
-	// iPad and iPod detection	
-	var isiPad = function(){
-		return (navigator.platform.indexOf("iPad") != -1);
-	};
-
-	var isiPhone = function(){
-	    return (
-			(navigator.platform.indexOf("iPhone") != -1) || 
-			(navigator.platform.indexOf("iPod") != -1)
-	    );
-	};
+	$(window).stellar({
+    responsive: true,
+    parallaxBackgrounds: true,
+    parallaxElements: true,
+    horizontalScrolling: false,
+    hideDistantElements: false,
+    scrollProperty: 'scroll'
+  });
 
 
 	var fullHeight = function() {
@@ -25,152 +25,167 @@
 		});
 
 	};
+	fullHeight();
 
-	var burgerMenu = function() {
+	// loader
+	var loader = function() {
+		setTimeout(function() { 
+			if($('#ftco-loader').length > 0) {
+				$('#ftco-loader').removeClass('show');
+			}
+		}, 1);
+	};
+	loader();
 
-		$('.js-colorlib-nav-toggle').on('click', function(event) {
+	// Scrollax
+   $.Scrollax();
+
+
+   var burgerMenu = function() {
+
+		$('.js-colorlib-nav-toggle').on('click', function(event){
 			event.preventDefault();
 			var $this = $(this);
-			if( $('body').hasClass('menu-show') ) {
-				$('body').removeClass('menu-show');
-				$('#colorlib-main-nav > .js-colorlib-nav-toggle').removeClass('show');
-			} else {
-				$('body').addClass('menu-show');
-				setTimeout(function(){
-					$('#colorlib-main-nav > .js-colorlib-nav-toggle').addClass('show');
-				}, 900);
-			}
-		})
-	};
 
-	// Animations
+			if ($('body').hasClass('offcanvas')) {
+				$this.removeClass('active');
+				$('body').removeClass('offcanvas');	
+			} else {
+				$this.addClass('active');
+				$('body').addClass('offcanvas');	
+			}
+		});
+	};
+	burgerMenu();
+
+	// Click outside of offcanvass
+	var mobileMenuOutsideClick = function() {
+
+		$(document).click(function (e) {
+	    var container = $("#colorlib-aside, .js-colorlib-nav-toggle");
+	    if (!container.is(e.target) && container.has(e.target).length === 0) {
+
+	    	if ( $('body').hasClass('offcanvas') ) {
+
+    			$('body').removeClass('offcanvas');
+    			$('.js-colorlib-nav-toggle').removeClass('active');
+			
+	    	}
+	    	
+	    }
+		});
+
+		$(window).scroll(function(){
+			if ( $('body').hasClass('offcanvas') ) {
+
+    			$('body').removeClass('offcanvas');
+    			$('.js-colorlib-nav-toggle').removeClass('active');
+			
+	    	}
+		});
+
+	};
+	mobileMenuOutsideClick();
+
+	var carousel = function() {
+		$('.home-slider').owlCarousel({
+	    loop:true,
+	    autoplay: true,
+	    margin:0,
+	    animateOut: 'fadeOut',
+	    animateIn: 'fadeIn',
+	    nav:false,
+	    autoplayHoverPause: false,
+	    items: 1,
+	    navText : ["<span class='ion-md-arrow-back'></span>","<span class='ion-chevron-right'></span>"],
+	    responsive:{
+	      0:{
+	        items:1
+	      },
+	      600:{
+	        items:1
+	      },
+	      1000:{
+	        items:1
+	      }
+	    }
+		});
+
+	};
+	carousel();
+
+	
 
 	var contentWayPoint = function() {
 		var i = 0;
-		$('.animate-box').waypoint( function( direction ) {
+		$('.ftco-animate').waypoint( function( direction ) {
 
-			if( direction === 'down' && !$(this.element).hasClass('animated') ) {
+			if( direction === 'down' && !$(this.element).hasClass('ftco-animated') ) {
 				
 				i++;
 
 				$(this.element).addClass('item-animate');
 				setTimeout(function(){
 
-					$('body .animate-box.item-animate').each(function(k){
+					$('body .ftco-animate.item-animate').each(function(k){
 						var el = $(this);
 						setTimeout( function () {
 							var effect = el.data('animate-effect');
 							if ( effect === 'fadeIn') {
-								el.addClass('fadeIn animated');
+								el.addClass('fadeIn ftco-animated');
+							} else if ( effect === 'fadeInLeft') {
+								el.addClass('fadeInLeft ftco-animated');
+							} else if ( effect === 'fadeInRight') {
+								el.addClass('fadeInRight ftco-animated');
 							} else {
-								el.addClass('fadeInUp animated');
+								el.addClass('fadeInUp ftco-animated');
 							}
-
 							el.removeClass('item-animate');
-						},  k * 200, 'easeInOutExpo' );
+						},  k * 50, 'easeInOutExpo' );
 					});
 					
 				}, 100);
 				
 			}
 
-		} , { offset: '85%' } );
+		} , { offset: '95%' } );
 	};
+	contentWayPoint();
 
 
-	var counter = function() {
-		$('.js-counter').countTo({
-			 formatter: function (value, options) {
-	      return value.toFixed(options.decimals);
-	    },
-		});
-	};
+	// magnific popup
+	$('.image-popup').magnificPopup({
+    type: 'image',
+    closeOnContentClick: true,
+    closeBtnInside: false,
+    fixedContentPos: true,
+    mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
+     gallery: {
+      enabled: true,
+      navigateByImgClick: true,
+      preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+    },
+    image: {
+      verticalFit: true
+    },
+    zoom: {
+      enabled: true,
+      duration: 300 // don't foget to change the duration also in CSS
+    }
+  });
 
-	var counterWayPoint = function() {
-		if ($('#colorlib-counter').length > 0 ) {
-			$('#colorlib-counter').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this.element).hasClass('animated') ) {
-					setTimeout( counter , 400);					
-					$(this.element).addClass('animated');
-				}
-			} , { offset: '90%' } );
-		}
-	};
+  $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+    disableOn: 700,
+    type: 'iframe',
+    mainClass: 'mfp-fade',
+    removalDelay: 160,
+    preloader: false,
 
-	// Owl Carousel
-	var owlCarouselFeatureSlide = function() {
-		var owl = $('.owl-carousel1');
-		owl.owlCarousel({
-			animateOut: 'fadeOut',
-		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
-		   margin:0,
-		   nav:true,
-		   dots: false,
-		   autoHeight: true,
-		   responsive:{
-		      0:{
-		         items:1
-		      },
-		      600:{
-		         items:2
-		      },
-		      1000:{
-		         items:3
-		      }
-		   },
-		   navText: [
-		      "<i class='icon-arrow-left3 owl-direction'></i>",
-		      "<i class='icon-arrow-right3 owl-direction'></i>"
-	     	]
-		});
-		var owl2 = $('.owl-carousel');
-		owl2.owlCarousel({
-			animateOut: 'fadeOut',
-		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
-		   margin:0,
-		   nav:false,
-		   dots: true,
-		   autoHeight: true,
-		   items: 1,
-		   navText: [
-		      "<i class='icon-arrow-left3 owl-direction'></i>",
-		      "<i class='icon-arrow-right3 owl-direction'></i>"
-	     	]
-		});
-		var owl3 = $('.owl-carousel3');
-		owl3.owlCarousel({
-			animateOut: 'fadeOut',
-		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
-		   margin:0,
-		   nav:false,
-		   dots: false,
-		   autoHeight: true,
-		   items: 1,
-		   navText: [
-		      "<i class='icon-arrow-left3 owl-direction'></i>",
-		      "<i class='icon-arrow-right3 owl-direction'></i>"
-	     	]
-		});	
-	};
-
-	
+    fixedContentPos: false
+  });
 
 
-	// Document on load.
-	$(function(){
-		fullHeight();
-		burgerMenu();
-		counterWayPoint();
-		contentWayPoint();
-		owlCarouselFeatureSlide();
-	});
 
 
-}());
+})(jQuery);
+
